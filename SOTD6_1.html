@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+    <!-- HTML Table for Testing Purposes --> <!--Morgan Pickens 06/07/204-->
+    <table id="myTable" style="border: 10px solid red; font-size: 20px; font-weight: bold">
+        <tr id="row1" style="color: blue">
+            <td id="1.1" style="border: 2px solid black">Row 1 Col 1</td>
+            <td id="1.2" style="border: 2px solid black">Row 1 Col 2</td>
+        </tr>
+    </table>
+
+    <!-- Buttons to Launch Functions -->
+    <br><br>
+    <button type="button" onclick="changeTextColor()">Change Text Color</button>
+    <br><br>
+    <button type="button" onclick="changeFontSize()">Font Size</button>
+    <br><br>
+    <button type="button" onclick="changeBorderThickness()">Border Thickness</button>
+    <br><br>
+    <button type="button" onclick="changeBorderColor()">Border Color</button>
+
+    <script>
+        function changeTextColor() {
+            var textcolor = document.getElementById("row1").style.color;
+            if (textcolor == "green") {
+                textcolor = "blue";
+            } else {
+                textcolor = "green";
+            }
+            document.getElementById("row1").style.color = textcolor;
+        }
+
+        function changeFontSize() {
+            var table = document.getElementById("myTable");
+            var fontSize = table.style.fontSize;
+            if (fontSize == "30px") {
+                fontSize = "20px";
+            } else {
+                fontSize = "30px";
+            }
+            table.style.fontSize = fontSize;
+        }
+
+        function changeBorderThickness() {
+            var table = document.getElementById("myTable");
+            var borderThickness = table.style.borderWidth;
+            if (borderThickness == "15px") {
+                borderThickness = "10px";
+            } else {
+                borderThickness = "15px";
+            }
+            table.style.borderWidth = borderThickness;
+        }
+
+        function changeBorderColor() {
+            var table = document.getElementById("myTable");
+            var borderColor = table.style.borderColor;
+            if (borderColor == "blue") {
+                borderColor = "red";
+            } else {
+                borderColor = "blue";
+            }
+            table.style.borderColor = borderColor;
+        }
+    </script>
+</body>
+
+</html>
