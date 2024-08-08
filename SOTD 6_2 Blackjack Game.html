@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackjack</title> <!-- Morgan Pickens 08/07/2024-->
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #21a36d;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        button {
+            font-size: 1.5em;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        #player-hand,
+        #dealer-hand {
+            margin-top: 20px;
+            font-size: 1.5em;
+        }
+
+        .total {
+            font-size: 2em;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Blackjack</h1>
+        <div id="player-total" class="total"></div>
+        <button id="hitButton">Hit</button>
+        <button id="standButton">Stand</button>
+        <div id="player-hand"></div>
+        <div id="dealer-hand"></div>
+        <div id="result"></div>
+        <button id="playAgainButton" style="display: none;">Play Again</button>
+    </div>
+
+    <script>
+        // Card class representing a single card in the deck (Note this code is alot longer then the other assisgments but i did keep the same theme from the other class work you gave out)
+        class Card {
+            constructor(suit, rank) {
+                this.suit = suit;
+                this.rank = rank;
+            }
+
+            // Method to get the value of the card
+            getValue() {
+                if (['J', 'Q', 'K'].includes(this.rank)) return 10;
+                if (this.rank === 'A') return 11;
+                return parseInt(this.rank);
+            }
+
+            // Method to get the string representation of the card
+            toString() {
+                return `${this.rank} of ${this.suit}`;
+            }
+        }
+
+        // Function to create a deck of 52 cards
+        function createDeck() {
+            const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
+            const ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+            const deck = [];
+            for (let suit of suits) {
+                for (let rank of ranks) {
+                    deck.push(new Card(suit, rank));
+                }
+            }
+            return deck;
+        }
+
+        // Function to deal a random card from the deck
+        function dealCard(deck) {
+            const randomIndex = Math.floor(Math.random() * deck.length);
+            return deck.splice(randomIndex, 1)[0];
+        }
+
+        // Function to calculate the total value of a hand of cards
+        function calculateTotal(hand) {
+            let total = 0;
+            let aceCount = 0;
+            hand.forEach(card => {
+                total += card.getValue();
+                if (card.rank === 'A') aceCount++;
+            });
+            while (total > 21 && aceCount > 0) {
+                total -= 10;
+                aceCount--;
+            }
+            return total;
+        }
+
+        // Function to display the cards in a hand
+        function displayHand(hand, elementId) {
+            const handDiv = document.getElementById(elementId);
+            const handName = elementId === 'player-hand' ? 'Your Hand' : elementId.replace('-', ' ');
+            handDiv.innerHTML = `<h2>${handName}:</h2>`;
+            hand.forEach(card => {
+                const cardDiv = document.createElement('div');
+                cardDiv.textContent = card.toString();
+                handDiv.appendChild(cardDiv);
+            });
+        }
+
+        // Function to update the total value displayed above the cards
+        function updateTotal(total, elementId) {
+            document.getElementById(elementId).textContent = `Total: ${total}`;
+        }
+
+        // Function to reset the game state
+        function resetGame() {
+            document.getElementById('player-total').textContent = '';
+            document.getElementById('player-hand').innerHTML = '';
+            document.getElementById('dealer-hand').innerHTML = '';
+            document.getElementById('result').textContent = '';
+            document.getElementById('hitButton').style.display = 'inline-block';
+            document.getElementById('standButton').style.display = 'inline-block';
+            document.getElementById('playAgainButton').style.display = 'none';
+
+            playerHand.length = 0;
+            dealerHand.length = 0;
+            playerTotal = 0;
+            dealerTotal = 0;
+            gameOver = false;
+
+            deck.push(...createDeck());
+        }
+
+        // Initial setup
+        const deck = createDeck();
+        const playerHand = [];
+        const dealerHand = [];
+        let playerTotal = 0;
+        let dealerTotal = 0;
+        let gameOver = false;
+
+        // Event listener for the hit button
+        document.getElementById('hitButton').addEventListener('click', () => {
+            if (!gameOver) {
+                playerHand.push(dealCard(deck));
+                playerTotal = calculateTotal(playerHand);
+                displayHand(playerHand, 'player-hand');
+                updateTotal(playerTotal, 'player-total');
+                if (playerTotal > 21) {
+                    document.getElementById('result').textContent = 'You bust! Dealer wins.';
+                    gameOver = true;
+                    document.getElementById('hitButton').style.display = 'none';
+                    document.getElementById('standButton').style.display = 'none';
+                    document.getElementById('playAgainButton').style.display = 'inline-block';
+                }
+            }
+        });
+
+        // Event listener for the stand button
+        document.getElementById('standButton').addEventListener('click', () => {
+            if (!gameOver) {
+                while (dealerTotal < 17) {
+                    dealerHand.push(dealCard(deck));
+                    dealerTotal = calculateTotal(dealerHand);
+                }
+                displayHand(dealerHand, 'dealer-hand');
+                if (dealerTotal > 21 || dealerTotal < playerTotal) {
+                    document.getElementById('result').textContent = 'You win!';
+                } else if (dealerTotal > playerTotal) {
+                    document.getElementById('result').textContent = 'Dealer wins!';
+                } else {
+                    document.getElementById('result').textContent = 'It\'s a tie!';
+                }
+                gameOver = true;
+                document.getElementById('hitButton').style.display = 'none';
+                document.getElementById('standButton').style.display = 'none';
+                document.getElementById('playAgainButton').style.display = 'inline-block';
+            }
+        });
+
+        // Event listener for the play again button
+        document.getElementById('playAgainButton').addEventListener('click', () => {
+            resetGame();
+        });
+
+        // Reset the game to start
+        resetGame();
+    </script>
+</body>
+
+</html>
