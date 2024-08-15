@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Morgan Pickens 08/7/2024  I added in a liner-gradient background because it's my favorite style to use with building websites atm-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Dealer</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #1e3c72, #2a5298, #ffffff);
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        button {
+            font-size: 1.2em;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            display: block;
+            margin: 10px auto;
+        }
+
+        #deck,
+        #hand {
+            margin-top: 20px;
+            font-size: 1.2em;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        #deck div,
+        #hand div {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<!-- Created a container for my box "Note i did not create a seprate file for the css although i usually would everything is on one html page" -->
+
+<body>
+    <div class="container">
+        <h1>Card Dealer</h1>
+        <button id="shuffleAndDealButton">Shuffle & Deal 3 Cards</button>
+        <div id="deck"></div>
+        <div id="hand"></div>
+    </div>
+
+    <script>
+        class Card {
+            constructor(suit, rank) {
+                this.suit = suit;
+                this.rank = rank;
+                this.isVisible = false;
+            }
+
+            show() {
+                this.isVisible = true;
+            }
+
+            hide() {
+                this.isVisible = false;
+            }
+
+            toString() {
+                return `${this.rank} of ${this.suit}`;
+            }
+        }
+        //downblow these are my functions for the dec of cards include the arrays needed to contain the type of cards. 
+        function createDeck() {
+            const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
+            const ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+            const deck = [];
+            for (let suit of suits) {
+                for (let rank of ranks) {
+                    deck.push(new Card(suit, rank));
+                }
+            }
+            return deck;
+        }
+
+        function shuffleDeck(deck) {
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]]; // Swap elements
+            }
+            return deck;
+        }
+
+        function displayDeck(deck) {
+            const deckDiv = document.getElementById('deck');
+            deckDiv.innerHTML = '<h2>Deck (Shuffled):</h2>';
+            deck.forEach(card => {
+                const cardDiv = document.createElement('div');
+                cardDiv.textContent = card.toString();
+                deckDiv.appendChild(cardDiv);
+            });
+        }
+
+        function dealCards(deck) {
+            const hand = [];
+            while (hand.length < 3) {
+                hand.push(deck.pop()); // we push here to get the top card form the deck
+            }
+            return hand;
+        }
+        // we create this function to create our function to display the hands of cards that we need
+        function displayHand(hand) {
+            const handDiv = document.getElementById('hand');
+            handDiv.innerHTML = '<h2>Hand of cards:</h2>';
+            hand.forEach(card => {
+                const cardDiv = document.createElement('div');
+                cardDiv.textContent = card.toString();
+                handDiv.appendChild(cardDiv);
+            });
+        }
+
+        const deck = createDeck();
+        //this is to make sure the deck is shuffle dbefore we deal
+        document.getElementById('shuffleAndDealButton').addEventListener('click', () => {
+            const shuffledDeck = shuffleDeck([...deck]);
+            displayDeck(shuffledDeck);
+            const hand = dealCards(shuffledDeck);
+            displayHand(hand);
+        });
+    </script>
+</body>
+
+</html>
